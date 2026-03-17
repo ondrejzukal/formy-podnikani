@@ -90,7 +90,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1);min-height:100
   margin-bottom:16px;display:flex;align-items:center;gap:10px;
 }
 .section-heading::after{content:'';flex:1;height:1px;background:var(--t4)}
-.args-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.args-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 .arg-card{
   padding:16px 18px;border-radius:var(--radius);
   border:1px solid var(--t4);background:var(--bg2);
@@ -208,8 +208,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1);min-height:100
   <strong>Jak prezentovat:</strong>
   <ol>
     <li>Začni profilem <strong>Řemeslník paušál</strong> — ukážeš, že argument o odpisech tady nefunguje. Polovina sálu si uvědomí, že to doteď říkala špatně.</li>
+    <li>Přepni na <strong>Fotograf výdaj. paušál</strong> — neplátce DPH, výdaje se neuplatňují. Žádný daňový argument nefunguje.</li>
+    <li>Přepni na <strong>Konzultant výdaj. paušál + DPH</strong> — <em>aha moment:</em> stejný režim jako fotograf, ale plátce DPH → DPH odpočet funguje, odpisy ne. Ukazuje, proč nestačí znát režim, ale i plátcovství.</li>
     <li>Přepni na <strong>Účetní s.r.o.</strong> — úplně jiná krajina. Všechny argumenty fungují, ale nákupní proces je delší (jednatel/vedení schvaluje).</li>
-    <li>Přepni na <strong>Fotograf výdajový paušál</strong> — neplátce DPH, výdaje se neuplatňují. Jediný argument = TCO a bezpečnost.</li>
     <li>Závěr: <strong>Dvě discovery otázky na začátku kompletně změní, jaký argument použijete.</strong></li>
   </ol>
 </div>
@@ -225,19 +226,18 @@ const REGIMES=[
 ];
 
 const ARGS=[
-  {id:'dph',title:'Odpočet DPH',sub:'Mac je o 21 % levnější',yes:['danova','podvojne'],maybe:[],no:['pausalni','vydajovy'],note:'Funguje POUZE u plátců DPH. Neplátce platí plnou cenu s DPH — tohle se nedá obejít. Výdajový paušál navíc neumožňuje uplatnit skutečné výdaje.'},
+  {id:'dph',title:'Odpočet DPH',sub:'Mac je o 21 % levnější',yes:['danova','podvojne'],maybe:[],no:['pausalni','vydajovy'],note:'Závisí na plátcovství DPH, ne na daňovém režimu. OSVČ na výdajovém paušálu, která je plátce DPH, si DPH odečte — ale Mac jako reálný náklad v dani z příjmu neuplatní.',evalFn:p=>p.dph==='plátce'?'yes':'no'},
   {id:'odpis',title:'Daňový odpis',sub:'Mac snižuje základ daně',yes:['danova','podvojne'],maybe:[],no:['pausalni','vydajovy'],note:'V paušální dani a výdajovém paušálu se odpis neuplatňuje — výdaje se neprokazují doklady.'},
   {id:'konecrok',title:'Konec roku = nákup',sub:'Optimalizace daňového základu',yes:['danova','podvojne'],maybe:[],no:['pausalni','vydajovy'],note:'Smysl dává jen tam, kde skutečný náklad snižuje základ daně. Paušalisté nemají co optimalizovat.'},
   {id:'leasing',title:'Operativní leasing',sub:'Splátky jako provozní náklad',yes:['danova','podvojne'],maybe:[],no:['pausalni','vydajovy'],note:'V daňové evidenci jsou splátky plně uznatelný výdaj v měsíci zaplacení. V podvojném se rozloží do období.'},
-  {id:'tco',title:'TCO a návratnost',sub:'Mac se vyplatí v čase',yes:['pausalni','vydajovy','danova','podvojne'],maybe:[],no:[],note:'Funguje univerzálně bez ohledu na daňový režim. Nejsilnější argument pro neplátce a paušalisty, kde daňové argumenty neplatí.'},
-  {id:'security',title:'Bezpečnost dat',sub:'Šifrování, NATO certifikace',yes:['pausalni','vydajovy','danova','podvojne'],maybe:[],no:[],note:'Funguje univerzálně. Zvlášť silný u s.r.o. s klientskými daty — účetní, advokáti, lékaři, daňoví poradci.'}
 ];
 
 const PROFILES=[
   {id:'grafik',label:'Grafik OSVČ',emoji:'🎨',regime:'danova',dph:'plátce',desc:'Grafička, 3 roky podniká, obrat 1,2M Kč. Plátce DPH, daňová evidence. Kupuje 1 Mac pro sebe — osobní rozhodnutí, rychlý nákup.',discovery:'<strong>„Jste plátce DPH?"</strong> → Pokud ano, Mac je o 21 % levnější. <strong>„Jak dlouho podnikáte — řešíte odpisy?"</strong> → V daňové evidenci je Mac reálný náklad.'},
   {id:'remeslnik',label:'Řemeslník paušál',emoji:'🔧',regime:'pausalni',dph:'neplátce',desc:'Elektrikář, paušální daň, obrat 800 000 Kč. Neprokládá výdaje, DPH si neodečte. iPhone + iPad v terénu.',discovery:'<strong>„Jak řešíte dokumentaci zakázek?"</strong> → Daňové argumenty nefungují. Prodávej hodnotu: iPad na fotodokumentaci, iPhone na Tap to Pay. <strong>TCO a bezpečnost jsou jediné validní argumenty.</strong>'},
+  {id:'konzultant',label:'Konzultant výdaj. paušál + DPH',emoji:'💼',regime:'vydajovy',dph:'plátce',desc:'IT konzultant, obrat 1,8M Kč, výdajový paušál 60 %, plátce DPH. Nízké reálné náklady — paušál se vyplatí. Ale DPH si odečte, protože je plátce.',discovery:'<strong>„Jste plátce DPH?"</strong> → DPH z Macu si odečte. Ale pozor: <strong>Mac jako reálný náklad v dani z příjmu neuplatní</strong> — jede na paušálu. Argument o odpisech tady nefunguje, argument o DPH ano.'},
+  {id:'fotograf',label:'Fotograf výdaj. paušál',emoji:'📷',regime:'vydajovy',dph:'neplátce',desc:'Fotografka, obrat 700 000 Kč, výdajový paušál 60 %. Neplátce DPH. Mac + iPad na postprodukci a prezentaci klientům.',discovery:'<strong>„Kolik času vám zabere postprodukce?"</strong> → Ani DPH odpočet, ani odpisy nefungují. Prodávej rychlost práce a kvalitu displeje. <strong>„Jak teď prezentujete fotky klientům?"</strong>'},
   {id:'ucetni',label:'Účetní s.r.o.',emoji:'📊',regime:'podvojne',dph:'plátce',desc:'Účetní kancelář, 3 zaměstnanci, podvojné účetnictví. Plátce DPH. Bezpečnost klientských dat je absolutní priorita.',discovery:'<strong>„Kolik lidí u vás pracuje s citlivými daty klientů?"</strong> → Bezpečnost jako hlavní argument (NATO certifikace). <strong>„Kdo rozhoduje o nákupech?"</strong> → U s.r.o. schvaluje jednatel — počítej s delším cyklem.'},
-  {id:'fotograf',label:'Fotograf výdajový paušál',emoji:'📷',regime:'vydajovy',dph:'neplátce',desc:'Fotografka, obrat 700 000 Kč, výdajový paušál 60 %. Neplátce DPH. Mac + iPad na postprodukci a prezentaci klientům.',discovery:'<strong>„Kolik času vám zabere postprodukce?"</strong> → Ani DPH odpočet, ani odpisy nefungují. Prodávej rychlost práce a kvalitu displeje. <strong>„Jak teď prezentujete fotky klientům?"</strong>'},
   {id:'stavba',label:'Stavební dozor s.r.o.',emoji:'🏗',regime:'podvojne',dph:'plátce',desc:'Stavební firma, 8 zaměstnanců, podvojné účetnictví. iPad v terénu, Mac v kanceláři. Hromadný nákup přes Apple Business Manager.',discovery:'<strong>„Kolik zařízení by potřebovali vaši lidi v terénu?"</strong> → Hromadný nákup, MDM, ABM. <strong>„Kdo u vás spravuje IT?"</strong> → Otevírá cestu k Apple Business Manager a správě zařízení.'}
 ];
 
@@ -271,13 +271,20 @@ function render(){
     let cls='arg-card';
     if(active){
       const p=PROFILES.find(x=>x.id===active);
-      if(a.yes.includes(p.regime))cls+=' yes';
-      else if(a.maybe.includes(p.regime))cls+=' maybe';
-      else if(a.no.includes(p.regime))cls+=' no';
+      if(a.evalFn){
+        cls+=' '+a.evalFn(p);
+      } else {
+        if(a.yes.includes(p.regime))cls+=' yes';
+        else if(a.maybe.includes(p.regime))cls+=' maybe';
+        else if(a.no.includes(p.regime))cls+=' no';
+      }
     }
     let tags='';
-    if(a.yes.length===4)tags='<span class="tag tag-always">Vždy funguje</span>';
-    else{
+    if(a.id==='dph'){
+      tags='<span class="tag tag-yes">Plátce DPH</span><span class="tag tag-no">Neplátce DPH</span>';
+    } else if(a.yes.length===4){
+      tags='<span class="tag tag-always">Vždy funguje</span>';
+    } else {
       if(a.yes.length<4)tags+=a.yes.map(r=>`<span class="tag tag-yes">${REGIMES.find(x=>x.id===r).label}</span>`).join('');
       if(a.no.length<4)tags+=a.no.map(r=>`<span class="tag tag-no">${REGIMES.find(x=>x.id===r).label}</span>`).join('');
     }
