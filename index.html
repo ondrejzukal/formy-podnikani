@@ -207,11 +207,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1);min-height:100
   <div class="tn-label">Poznámka pro trenéra</div>
   <strong>Jak prezentovat:</strong>
   <ol>
-    <li>Začni profilem <strong>Řemeslník paušál</strong> — ukážeš, že argument o odpisech tady nefunguje. Polovina sálu si uvědomí, že to doteď říkala špatně.</li>
-    <li>Přepni na <strong>Fotograf výdaj. paušál</strong> — neplátce DPH, výdaje se neuplatňují. Žádný daňový argument nefunguje.</li>
-    <li>Přepni na <strong>Konzultant výdaj. paušál + DPH</strong> — <em>aha moment:</em> stejný režim jako fotograf, ale plátce DPH → DPH odpočet funguje, odpisy ne. Ukazuje, proč nestačí znát režim, ale i plátcovství.</li>
-    <li>Přepni na <strong>Účetní s.r.o.</strong> — úplně jiná krajina. Všechny argumenty fungují, ale nákupní proces je delší (jednatel/vedení schvaluje).</li>
-    <li>Závěr: <strong>Dvě discovery otázky na začátku kompletně změní, jaký argument použijete.</strong></li>
+    <li>Začni profilem <strong>Řemeslník paušál</strong> — žádný daňový argument nefunguje. Polovina sálu si uvědomí, že to doteď říkala špatně.</li>
+    <li>Přepni na <strong>Fotograf výdaj. paušál</strong> — stejné: neplátce, výdaje se neuplatňují. Všechno červené.</li>
+    <li><strong>Konzultant výdaj. paušál + DPH</strong> — <em>první aha moment:</em> stejný režim jako fotograf, ale plátce DPH → DPH odpočet svítí zeleně. Ukazuje, proč nestačí znát režim.</li>
+    <li><strong>Masérka daň. evidence</strong> — <em>druhý aha moment:</em> odpisy a leasing fungují (zelené), ale DPH ne — je neplátce. Opačná kombinace než konzultant.</li>
+    <li><strong>Kavárna s.r.o. neplátce</strong> — <em>třetí aha moment:</em> s.r.o. neznamená automaticky plátce DPH. Odpisy ano, DPH ne.</li>
+    <li>Přepni na <strong>Účetní s.r.o. + DPH</strong> — všechno zelené, ale delší nákupní cyklus.</li>
+    <li>Závěr: <strong>Není to o formě podnikání. Je to o dvou otázkách: jaký máte daňový režim a jste plátce DPH?</strong></li>
   </ol>
 </div>
 
@@ -233,12 +235,14 @@ const ARGS=[
 ];
 
 const PROFILES=[
-  {id:'grafik',label:'Grafik OSVČ',emoji:'🎨',regime:'danova',dph:'plátce',desc:'Grafička, 3 roky podniká, obrat 1,2M Kč. Plátce DPH, daňová evidence. Kupuje 1 Mac pro sebe — osobní rozhodnutí, rychlý nákup.',discovery:'<strong>„Jste plátce DPH?"</strong> → Pokud ano, Mac je o 21 % levnější. <strong>„Jak dlouho podnikáte — řešíte odpisy?"</strong> → V daňové evidenci je Mac reálný náklad.'},
   {id:'remeslnik',label:'Řemeslník paušál',emoji:'🔧',regime:'pausalni',dph:'neplátce',desc:'Elektrikář, paušální daň, obrat 800 000 Kč. Neprokládá výdaje, DPH si neodečte. iPhone + iPad v terénu.',discovery:'<strong>„Jak řešíte dokumentaci zakázek?"</strong> → Daňové argumenty nefungují. Prodávej hodnotu: iPad na fotodokumentaci, iPhone na Tap to Pay. <strong>TCO a bezpečnost jsou jediné validní argumenty.</strong>'},
-  {id:'konzultant',label:'Konzultant výdaj. paušál + DPH',emoji:'💼',regime:'vydajovy',dph:'plátce',desc:'IT konzultant, obrat 1,8M Kč, výdajový paušál 60 %, plátce DPH. Nízké reálné náklady — paušál se vyplatí. Ale DPH si odečte, protože je plátce.',discovery:'<strong>„Jste plátce DPH?"</strong> → DPH z Macu si odečte. Ale pozor: <strong>Mac jako reálný náklad v dani z příjmu neuplatní</strong> — jede na paušálu. Argument o odpisech tady nefunguje, argument o DPH ano.'},
   {id:'fotograf',label:'Fotograf výdaj. paušál',emoji:'📷',regime:'vydajovy',dph:'neplátce',desc:'Fotografka, obrat 700 000 Kč, výdajový paušál 60 %. Neplátce DPH. Mac + iPad na postprodukci a prezentaci klientům.',discovery:'<strong>„Kolik času vám zabere postprodukce?"</strong> → Ani DPH odpočet, ani odpisy nefungují. Prodávej rychlost práce a kvalitu displeje. <strong>„Jak teď prezentujete fotky klientům?"</strong>'},
-  {id:'ucetni',label:'Účetní s.r.o.',emoji:'📊',regime:'podvojne',dph:'plátce',desc:'Účetní kancelář, 3 zaměstnanci, podvojné účetnictví. Plátce DPH. Bezpečnost klientských dat je absolutní priorita.',discovery:'<strong>„Kolik lidí u vás pracuje s citlivými daty klientů?"</strong> → Bezpečnost jako hlavní argument (NATO certifikace). <strong>„Kdo rozhoduje o nákupech?"</strong> → U s.r.o. schvaluje jednatel — počítej s delším cyklem.'},
-  {id:'stavba',label:'Stavební dozor s.r.o.',emoji:'🏗',regime:'podvojne',dph:'plátce',desc:'Stavební firma, 8 zaměstnanců, podvojné účetnictví. iPad v terénu, Mac v kanceláři. Hromadný nákup přes Apple Business Manager.',discovery:'<strong>„Kolik zařízení by potřebovali vaši lidi v terénu?"</strong> → Hromadný nákup, MDM, ABM. <strong>„Kdo u vás spravuje IT?"</strong> → Otevírá cestu k Apple Business Manager a správě zařízení.'}
+  {id:'konzultant',label:'Konzultant výdaj. paušál + DPH',emoji:'💼',regime:'vydajovy',dph:'plátce',desc:'IT konzultant, obrat 1,8M Kč, výdajový paušál 60 %, plátce DPH. Nízké reálné náklady — paušál se vyplatí. Ale DPH si odečte, protože je plátce.',discovery:'<strong>„Jste plátce DPH?"</strong> → DPH z Macu si odečte. Ale pozor: <strong>Mac jako reálný náklad v dani z příjmu neuplatní</strong> — jede na paušálu. Argument o odpisech tady nefunguje, argument o DPH ano.'},
+  {id:'masérka',label:'Masérka daň. evidence',emoji:'💆',regime:'danova',dph:'neplátce',desc:'Masérka, OSVČ, obrat 900 000 Kč, daňová evidence, neplátce DPH. Mac na web a rezervace, iPad na kartotéku klientů. Skutečné výdaje si uplatní, ale DPH neodečte.',discovery:'<strong>„Vedete si evidenci klientů? Jak řešíte rezervace?"</strong> → Odpisy a leasing fungují (daňová evidence). Ale DPH neodečte — Mac stojí plnou cenu s DPH. <strong>Argument o odpisu ano, o DPH ne.</strong>'},
+  {id:'grafik',label:'Grafik daň. evidence + DPH',emoji:'🎨',regime:'danova',dph:'plátce',desc:'Grafička, 3 roky podniká, obrat 1,2M Kč. Plátce DPH, daňová evidence. Kupuje 1 Mac pro sebe — osobní rozhodnutí, rychlý nákup.',discovery:'<strong>„Jste plátce DPH?"</strong> → Mac je o 21 % levnější. <strong>„Jak dlouho podnikáte — řešíte odpisy?"</strong> → V daňové evidenci je Mac reálný náklad. Všechny 4 argumenty fungují.'},
+  {id:'kavarna',label:'Kavárna s.r.o. neplátce',emoji:'☕',regime:'podvojne',dph:'neplátce',desc:'Malá kavárna, s.r.o., 2 zaměstnanci, obrat 1,5M Kč, podvojné účetnictví, neplátce DPH. iPad jako pokladna, Mac na účetnictví a objednávky.',discovery:'<strong>„Kdo u vás rozhoduje o nákupech?"</strong> → Odpisy a leasing fungují (podvojné účetnictví), ale DPH neodečte. <strong>Pozor: s.r.o. neznamená automaticky plátce DPH.</strong> Ptej se vždy.'},
+  {id:'ucetni',label:'Účetní s.r.o. + DPH',emoji:'📊',regime:'podvojne',dph:'plátce',desc:'Účetní kancelář, 3 zaměstnanci, podvojné účetnictví. Plátce DPH. Bezpečnost klientských dat je absolutní priorita.',discovery:'<strong>„Kolik lidí u vás pracuje s citlivými daty klientů?"</strong> → Bezpečnost jako hlavní argument (NATO certifikace). <strong>„Kdo rozhoduje o nákupech?"</strong> → Všechny 4 argumenty fungují. Počítej s delším schvalovacím cyklem.'},
+  {id:'stavba',label:'Stavební dozor s.r.o. + DPH',emoji:'🏗',regime:'podvojne',dph:'plátce',desc:'Stavební firma, 8 zaměstnanců, podvojné účetnictví, plátce DPH. iPad v terénu, Mac v kanceláři. Hromadný nákup přes Apple Business Manager.',discovery:'<strong>„Kolik zařízení by potřebovali vaši lidi v terénu?"</strong> → Hromadný nákup, MDM, ABM. <strong>„Kdo u vás spravuje IT?"</strong> → Otevírá cestu k Apple Business Manager a správě zařízení.'}
 ];
 
 let active=null;
