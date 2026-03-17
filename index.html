@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formy podnikání — SMB školení</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0c;--bg2:#111114;--bg3:#18181c;--bg4:#1f1f25;
+  --t1:#f0eff4;--t2:#a09fac;--t3:#6b6a76;--t4:#44434d;
+  --accent:#7c6bf0;--accent2:#a594ff;--accent-bg:rgba(124,107,240,.08);--accent-border:rgba(124,107,240,.22);
+  --green:#34d399;--green-bg:rgba(52,211,153,.08);--green-border:rgba(52,211,153,.2);--green-t:#6ee7b7;
+  --red:#f87171;--red-bg:rgba(248,113,113,.06);--red-border:rgba(248,113,113,.18);--red-t:#fca5a5;
+  --amber:#fbbf24;--amber-bg:rgba(251,191,36,.07);--amber-border:rgba(251,191,36,.18);--amber-t:#fcd34d;
+  --blue:#60a5fa;--blue-bg:rgba(96,165,250,.07);--blue-border:rgba(96,165,250,.2);
+  --radius:10px;--radius-lg:14px;
+  --font:'DM Sans',system-ui,-apple-system,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html{font-size:16px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:var(--font);background:var(--bg);color:var(--t1);min-height:100vh;line-height:1.55}
+
+.page{max-width:1120px;margin:0 auto;padding:48px 32px 80px}
+
+/* Header */
+.header{margin-bottom:56px}
+.header h1{font-size:clamp(28px,3.5vw,42px);font-weight:600;letter-spacing:-.02em;line-height:1.15;margin-bottom:12px}
+.header h1 span{color:var(--accent2)}
+.header p{font-size:15px;color:var(--t2);max-width:640px;line-height:1.65}
+
+/* Profile pills */
+.profiles{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:40px}
+.profile-pill{
+  font-family:var(--font);font-size:13px;font-weight:400;
+  padding:8px 16px;border-radius:100px;
+  border:1px solid var(--t4);background:transparent;color:var(--t2);
+  cursor:pointer;transition:all .2s ease;user-select:none;
+}
+.profile-pill:hover{border-color:var(--t3);color:var(--t1)}
+.profile-pill.active{
+  background:var(--accent-bg);border-color:var(--accent-border);color:var(--accent2);font-weight:500;
+}
+
+/* Spectrum */
+.spectrum-section{margin-bottom:48px}
+.spectrum-label{font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:16px}
+.spectrum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.spec-card{
+  padding:20px 18px;border-radius:var(--radius-lg);
+  border:1px solid var(--t4);background:var(--bg2);
+  transition:all .3s ease;position:relative;overflow:hidden;
+}
+.spec-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--accent);opacity:0;transition:opacity .3s ease;
+}
+.spec-card.active{border-color:var(--accent-border);background:var(--accent-bg)}
+.spec-card.active::before{opacity:1}
+.spec-card .name{font-size:15px;font-weight:500;margin-bottom:4px}
+.spec-card .sub{font-size:12px;color:var(--t3);line-height:1.5;margin-bottom:12px;min-height:36px}
+.complexity{display:flex;align-items:center;gap:6px}
+.complexity-dots{display:flex;gap:3px}
+.complexity .dot{width:7px;height:7px;border-radius:50%;background:var(--t4);transition:background .3s}
+.complexity .dot.on{background:var(--accent)}
+.complexity .label{font-size:10px;color:var(--t4);letter-spacing:.04em}
+.spectrum-arrow{display:flex;align-items:center;gap:0;padding:0 4px}
+.spectrum-arrow .line{flex:1;height:1px;background:linear-gradient(90deg,var(--t4),var(--t3),var(--t4))}
+.spectrum-arrow .txt{font-size:11px;color:var(--t4);padding:0 12px;white-space:nowrap}
+
+/* Detail banner */
+.detail-banner{
+  padding:16px 20px;border-radius:var(--radius);
+  background:var(--bg3);border:1px solid var(--t4);
+  margin-bottom:48px;font-size:13px;color:var(--t2);line-height:1.6;
+  transition:all .3s;display:none;
+}
+.detail-banner.show{display:block}
+.detail-banner strong{color:var(--t1);font-weight:500}
+.detail-banner .meta{display:flex;gap:16px;margin-top:8px;font-size:12px}
+.detail-banner .meta-item{display:flex;align-items:center;gap:5px}
+.detail-banner .meta-dot{width:6px;height:6px;border-radius:50%}
+
+/* Arguments grid */
+.args-section{margin-bottom:48px}
+.section-heading{
+  font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);
+  margin-bottom:16px;display:flex;align-items:center;gap:10px;
+}
+.section-heading::after{content:'';flex:1;height:1px;background:var(--t4)}
+.args-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.arg-card{
+  padding:16px 18px;border-radius:var(--radius);
+  border:1px solid var(--t4);background:var(--bg2);
+  transition:all .3s ease;
+}
+.arg-card.yes{border-color:var(--green-border);background:var(--green-bg)}
+.arg-card.no{border-color:var(--red-border);background:var(--red-bg);opacity:.45}
+.arg-card.maybe{border-color:var(--amber-border);background:var(--amber-bg)}
+.arg-card .arg-title{font-size:14px;font-weight:500;margin-bottom:2px}
+.arg-card .arg-sub{font-size:12px;color:var(--t3);margin-bottom:10px}
+.arg-card .tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{
+  font-size:10px;font-weight:500;padding:3px 8px;border-radius:100px;
+  letter-spacing:.02em;
+}
+.tag-yes{background:var(--green-bg);color:var(--green-t);border:1px solid var(--green-border)}
+.tag-no{background:var(--red-bg);color:var(--red-t);border:1px solid var(--red-border)}
+.tag-always{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)}
+.arg-card .note{font-size:11px;color:var(--t3);margin-top:8px;line-height:1.5;padding-top:8px;border-top:1px solid rgba(255,255,255,.04)}
+
+/* Accounting table */
+.accounting-section{margin-bottom:48px}
+.acc-table{border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--t4)}
+.acc-row{display:grid;grid-template-columns:180px 1fr;border-bottom:1px solid rgba(255,255,255,.04)}
+.acc-row:last-child{border-bottom:none}
+.acc-row.active{background:var(--accent-bg)}
+.acc-cell{padding:14px 18px;font-size:13px;line-height:1.55}
+.acc-cell:first-child{font-weight:500;color:var(--t1);background:rgba(255,255,255,.02);border-right:1px solid rgba(255,255,255,.04)}
+.acc-cell:last-child{color:var(--t2)}
+
+/* Discovery */
+.discovery{
+  padding:20px 24px;border-radius:var(--radius-lg);
+  border-left:3px solid var(--accent);background:var(--bg3);
+  font-size:15px;font-style:italic;color:var(--t2);line-height:1.65;
+  margin-bottom:48px;
+}
+.discovery strong{color:var(--t1);font-style:normal}
+
+/* Trainer note */
+.trainer-note{
+  padding:20px 24px;border-radius:var(--radius-lg);
+  background:var(--bg2);border:1px dashed var(--t4);
+  font-size:13px;color:var(--t3);line-height:1.65;
+}
+.trainer-note .tn-label{
+  font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--amber);margin-bottom:8px;
+}
+.trainer-note strong{color:var(--t2);font-weight:500}
+.trainer-note ol{padding-left:20px;margin-top:8px}
+.trainer-note li{margin-bottom:4px}
+
+/* Responsive */
+@media(max-width:800px){
+  .page{padding:32px 16px 64px}
+  .spectrum-grid{grid-template-columns:repeat(2,1fr)}
+  .args-grid{grid-template-columns:1fr 1fr}
+  .acc-row{grid-template-columns:140px 1fr}
+}
+@media(max-width:520px){
+  .spectrum-grid{grid-template-columns:1fr}
+  .args-grid{grid-template-columns:1fr}
+  .acc-row{grid-template-columns:1fr}
+  .acc-cell:first-child{border-right:none;border-bottom:1px solid rgba(255,255,255,.04)}
+}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .5s ease both}
+.fade-up:nth-child(2){animation-delay:.05s}
+.fade-up:nth-child(3){animation-delay:.1s}
+.fade-up:nth-child(4){animation-delay:.15s}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="header fade-up">
+  <h1>Formy podnikání<br><span>a kdy který argument funguje</span></h1>
+  <p>Klikni na profil podnikatele a sleduj, jak se mění prodejní argumenty, evidence i discovery otázky. Dvě otázky na začátku změní celý prodejní rozhovor.</p>
+</div>
+
+<div class="profiles" id="profiles"></div>
+
+<div class="spectrum-section">
+  <div class="spectrum-label">Spektrum daňových režimů</div>
+  <div class="spectrum-grid" id="spectrum"></div>
+  <div class="spectrum-arrow">
+    <div class="line"></div>
+    <div class="txt">jednodušší →</div>
+    <div class="line" style="flex:4"></div>
+    <div class="txt">→ složitější administrativa</div>
+    <div class="line"></div>
+  </div>
+</div>
+
+<div class="detail-banner" id="detail"></div>
+
+<div class="args-section">
+  <div class="section-heading">Prodejní argumenty</div>
+  <div class="args-grid" id="args"></div>
+</div>
+
+<div class="accounting-section">
+  <div class="section-heading">Evidence a účetnictví — co to znamená pro nákup</div>
+  <div class="acc-table" id="accounting"></div>
+</div>
+
+<div class="section-heading">Discovery otázka pro prodejce</div>
+<div class="discovery" id="discovery"></div>
+
+<div class="trainer-note">
+  <div class="tn-label">Poznámka pro trenéra</div>
+  <strong>Jak prezentovat:</strong>
+  <ol>
+    <li>Začni profilem <strong>Řemeslník paušál</strong> — ukážeš, že argument o odpisech tady nefunguje. Polovina sálu si uvědomí, že to doteď říkala špatně.</li>
+    <li>Přepni na <strong>Účetní s.r.o.</strong> — úplně jiná krajina. Všechny argumenty fungují, ale nákupní proces je delší (jednatel/vedení schvaluje).</li>
+    <li>Přepni na <strong>Fotograf výdajový paušál</strong> — neplátce DPH, výdaje se neuplatňují. Jediný argument = TCO a bezpečnost.</li>
+    <li>Závěr: <strong>Dvě discovery otázky na začátku kompletně změní, jaký argument použijete.</strong></li>
+  </ol>
+</div>
+
+</div>
+
+<script>
+const REGIMES=[
+  {id:'pausalni',label:'Paušální daň',sub:'OSVČ, obrat do 2M Kč, neplátce DPH',complexity:1,evidence:'Žádná evidence',accounting:'Žádné vedení — fixní měsíční platba zahrnuje daň z příjmu, sociální i zdravotní pojištění. Výdaje se neprokazují, nic se neodpočítává.'},
+  {id:'vydajovy',label:'Výdajový paušál',sub:'OSVČ, % z příjmů jako výdaje (40–80 %)',complexity:2,evidence:'Zjednodušená evidence',accounting:'Evidence příjmů a pohledávek. Výdaje se neprokazují — stát počítá paušálem. Faktický účetní doklad za Mac se nedá uplatnit jako reálný náklad.'},
+  {id:'danova',label:'Daňová evidence',sub:'OSVČ, skutečné příjmy a výdaje',complexity:3,evidence:'Daňová evidence',accounting:'Příjmy, výdaje, kniha pohledávek a závazků. Mac je reálný daňový výdaj — do 80 000 Kč celý v roce pořízení, nad 80 000 Kč odpis ve 3 letech. Leasingové splátky = měsíční provozní náklad, plně uznatelný.'},
+  {id:'podvojne',label:'Podvojné účetnictví',sub:'s.r.o. povinně, OSVČ dobrovolně',complexity:5,evidence:'Podvojné účetnictví',accounting:'Rozvaha, výsledovka, účetní závěrka, zveřejnění v obchodním rejstříku. Mac = hmotný majetek v účetních odpisech dle odpisového plánu firmy. Nákup schvaluje jednatel nebo vedení — delší rozhodovací proces. Často přes leasing nebo operativní pronájem.'}
+];
+
+const ARGS=[
+  {id:'dph',title:'Odpočet DPH',sub:'Mac je o 21 % levnější',yes:['danova','podvojne'],maybe:[],no:['pausalni','vydajovy'],note:'Funguje POUZE u plátců DPH. Neplátce platí plnou cenu s DPH — tohle se nedá obejít. Výdajový paušál navíc neumožňuje uplatnit skutečné výdaje.'},
+  {id:'odpis',title:'Daňový odpis',sub:'Mac snižuje základ daně',yes:['danova','podvojne'],maybe:[],no:['pausalni','vydajovy'],note:'V paušální dani a výdajovém paušálu se odpis neuplatňuje — výdaje se neprokazují doklady.'},
+  {id:'konecrok',title:'Konec roku = nákup',sub:'Optimalizace daňového základu',yes:['danova','podvojne'],maybe:[],no:['pausalni','vydajovy'],note:'Smysl dává jen tam, kde skutečný náklad snižuje základ daně. Paušalisté nemají co optimalizovat.'},
+  {id:'leasing',title:'Operativní leasing',sub:'Splátky jako provozní náklad',yes:['danova','podvojne'],maybe:[],no:['pausalni','vydajovy'],note:'V daňové evidenci jsou splátky plně uznatelný výdaj v měsíci zaplacení. V podvojném se rozloží do období.'},
+  {id:'tco',title:'TCO a návratnost',sub:'Mac se vyplatí v čase',yes:['pausalni','vydajovy','danova','podvojne'],maybe:[],no:[],note:'Funguje univerzálně bez ohledu na daňový režim. Nejsilnější argument pro neplátce a paušalisty, kde daňové argumenty neplatí.'},
+  {id:'security',title:'Bezpečnost dat',sub:'Šifrování, NATO certifikace',yes:['pausalni','vydajovy','danova','podvojne'],maybe:[],no:[],note:'Funguje univerzálně. Zvlášť silný u s.r.o. s klientskými daty — účetní, advokáti, lékaři, daňoví poradci.'}
+];
+
+const PROFILES=[
+  {id:'grafik',label:'Grafik OSVČ',emoji:'🎨',regime:'danova',dph:'plátce',desc:'Grafička, 3 roky podniká, obrat 1,2M Kč. Plátce DPH, daňová evidence. Kupuje 1 Mac pro sebe — osobní rozhodnutí, rychlý nákup.',discovery:'<strong>„Jste plátce DPH?"</strong> → Pokud ano, Mac je o 21 % levnější. <strong>„Jak dlouho podnikáte — řešíte odpisy?"</strong> → V daňové evidenci je Mac reálný náklad.'},
+  {id:'remeslnik',label:'Řemeslník paušál',emoji:'🔧',regime:'pausalni',dph:'neplátce',desc:'Elektrikář, paušální daň, obrat 800 000 Kč. Neprokládá výdaje, DPH si neodečte. iPhone + iPad v terénu.',discovery:'<strong>„Jak řešíte dokumentaci zakázek?"</strong> → Daňové argumenty nefungují. Prodávej hodnotu: iPad na fotodokumentaci, iPhone na Tap to Pay. <strong>TCO a bezpečnost jsou jediné validní argumenty.</strong>'},
+  {id:'ucetni',label:'Účetní s.r.o.',emoji:'📊',regime:'podvojne',dph:'plátce',desc:'Účetní kancelář, 3 zaměstnanci, podvojné účetnictví. Plátce DPH. Bezpečnost klientských dat je absolutní priorita.',discovery:'<strong>„Kolik lidí u vás pracuje s citlivými daty klientů?"</strong> → Bezpečnost jako hlavní argument (NATO certifikace). <strong>„Kdo rozhoduje o nákupech?"</strong> → U s.r.o. schvaluje jednatel — počítej s delším cyklem.'},
+  {id:'fotograf',label:'Fotograf výdajový paušál',emoji:'📷',regime:'vydajovy',dph:'neplátce',desc:'Fotografka, obrat 700 000 Kč, výdajový paušál 60 %. Neplátce DPH. Mac + iPad na postprodukci a prezentaci klientům.',discovery:'<strong>„Kolik času vám zabere postprodukce?"</strong> → Ani DPH odpočet, ani odpisy nefungují. Prodávej rychlost práce a kvalitu displeje. <strong>„Jak teď prezentujete fotky klientům?"</strong>'},
+  {id:'stavba',label:'Stavební dozor s.r.o.',emoji:'🏗',regime:'podvojne',dph:'plátce',desc:'Stavební firma, 8 zaměstnanců, podvojné účetnictví. iPad v terénu, Mac v kanceláři. Hromadný nákup přes Apple Business Manager.',discovery:'<strong>„Kolik zařízení by potřebovali vaši lidi v terénu?"</strong> → Hromadný nákup, MDM, ABM. <strong>„Kdo u vás spravuje IT?"</strong> → Otevírá cestu k Apple Business Manager a správě zařízení.'}
+];
+
+let active=null;
+
+function render(){
+  // Profiles
+  const pEl=document.getElementById('profiles');
+  pEl.innerHTML=PROFILES.map(p=>`<button class="profile-pill${active===p.id?' active':''}" onclick="pick('${p.id}')">${p.emoji} ${p.label}</button>`).join('')+`<button class="profile-pill${active===null?' active':''}" onclick="pick(null)">Vše</button>`;
+
+  // Spectrum
+  const sEl=document.getElementById('spectrum');
+  sEl.innerHTML=REGIMES.map(r=>{
+    const isA=active&&PROFILES.find(p=>p.id===active)?.regime===r.id;
+    const dots=Array.from({length:5},(_,i)=>`<span class="dot${i<r.complexity?' on':''}"></span>`).join('');
+    return`<div class="spec-card fade-up${isA?' active':''}"><div class="name">${r.label}</div><div class="sub">${r.sub}</div><div class="complexity"><span class="complexity-dots">${dots}</span><span class="label">složitost</span></div></div>`;
+  }).join('');
+
+  // Detail
+  const dEl=document.getElementById('detail');
+  if(active){
+    const p=PROFILES.find(x=>x.id===active);
+    const r=REGIMES.find(x=>x.id===p.regime);
+    dEl.className='detail-banner show';
+    dEl.innerHTML=`<strong>${p.emoji} ${p.label}</strong> — ${p.desc}<div class="meta"><span class="meta-item"><span class="meta-dot" style="background:var(--accent)"></span>Režim: ${r.label}</span><span class="meta-item"><span class="meta-dot" style="background:${p.dph==='plátce'?'var(--green)':'var(--red)'}"></span>DPH: ${p.dph}</span><span class="meta-item"><span class="meta-dot" style="background:var(--blue)"></span>Evidence: ${r.evidence}</span></div>`;
+  }else{dEl.className='detail-banner'}
+
+  // Arguments
+  const aEl=document.getElementById('args');
+  aEl.innerHTML=ARGS.map(a=>{
+    let cls='arg-card';
+    if(active){
+      const p=PROFILES.find(x=>x.id===active);
+      if(a.yes.includes(p.regime))cls+=' yes';
+      else if(a.maybe.includes(p.regime))cls+=' maybe';
+      else if(a.no.includes(p.regime))cls+=' no';
+    }
+    let tags='';
+    if(a.yes.length===4)tags='<span class="tag tag-always">Vždy funguje</span>';
+    else{
+      if(a.yes.length<4)tags+=a.yes.map(r=>`<span class="tag tag-yes">${REGIMES.find(x=>x.id===r).label}</span>`).join('');
+      if(a.no.length<4)tags+=a.no.map(r=>`<span class="tag tag-no">${REGIMES.find(x=>x.id===r).label}</span>`).join('');
+    }
+    return`<div class="${cls}"><div class="arg-title">${a.title}</div><div class="arg-sub">${a.sub}</div><div class="tags">${tags}</div><div class="note">${a.note}</div></div>`;
+  }).join('');
+
+  // Accounting
+  const accEl=document.getElementById('accounting');
+  accEl.innerHTML=REGIMES.map(r=>{
+    const isA=active&&PROFILES.find(p=>p.id===active)?.regime===r.id;
+    return`<div class="acc-row${isA?' active':''}"><div class="acc-cell">${r.label}</div><div class="acc-cell">${r.accounting}</div></div>`;
+  }).join('');
+
+  // Discovery
+  const discEl=document.getElementById('discovery');
+  if(active){
+    discEl.innerHTML=PROFILES.find(x=>x.id===active).discovery;
+  }else{
+    discEl.innerHTML='<strong>„Podnikáte sám nebo máte zaměstnance?"</strong> a <strong>„Jste plátce DPH?"</strong> — dvě otázky, které kompletně změní, jaký prodejní argument použijete.';
+  }
+}
+
+function pick(id){active=active===id?null:id;render()}
+
+render();
+</script>
+</body>
+</html>
